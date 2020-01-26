@@ -1,12 +1,14 @@
-//jshint esversion:6
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const request = require("request");
 
 const app = express();
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
 
 app.use(express.static("public"));
 
@@ -19,33 +21,33 @@ app.post("/", function(req, res) {
   var lastName = req.body.lastName;
   var email = req.body.email;
   var data = {
-    members : [
+    members: [
       {
-        email_address : email,
-        status : "subscribed",
-        merge_fields : {
-          FNAME : firstName,
-          LNAME : lastName
+        email_address: email,
+        status: "subscribed",
+        merge_fields: {
+          FNAME: firstName,
+          LNAME: lastName
         }
       }
     ]
   };
   var jsonData = JSON.stringify(data);
   var options = {
-    url : "https://us4.api.mailchimp.com/3.0/lists/bb3f7367b5",
-    method : "POST",
-    headers : {
-      "Authorization" : "khizar 47796866d1cb249d2042419e7b57d090-us4",
+    url: "https://us4.api.mailchimp.com/3.0/lists/bb3f7367b5",
+    method: "POST",
+    headers: {
+      Authorization: "khizar " + process.env.API_KEY
     },
-    body : jsonData
+    body: jsonData
   };
   request(options, function(error, response, body) {
-    if(error) {
+    if (error) {
       console.log("error");
       res.sendFile(__dirname + "/failure.html");
     } else {
       console.log(response.statusCode);
-      if(response.statusCode === 200) {
+      if (response.statusCode === 200) {
         res.sendFile(__dirname + "/success.html");
       } else {
         res.sendFile(__dirname + "/failure.html");
@@ -61,9 +63,3 @@ app.post("/failure", function(req, res) {
 app.listen(process.env.PORT || 3000, function() {
   console.log("Server has been started at port no. 3000");
 });
-
-// Api key
-// 47796866d1cb249d2042419e7b57d090-us4
-
-// list id
-// bb3f7367b5
